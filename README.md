@@ -57,10 +57,13 @@ Database Entities
 Each hospital maintains its own blood stock — not shared globally.
 
 **Data Flow / Architecture**
+
 **Donor Side**
 
 > Register → Login → Book Donation → Hospital Reviews → Status Updates → Statistics Dashboard
+
 **Hospital Side**
+
 > Login → View Donation Requests → Approve/Reject/Complete → Update Blood Stock → View Donors
 
 **Backend API Endpoints**
@@ -78,4 +81,103 @@ Each hospital maintains its own blood stock — not shared globally.
   
 * Blood Stock
     GET /api/bloodstock/{hospitalId}
+
+**Key Features Implemented**
+
+**For Donors*
+
+* Book donation for any hospital
+
+* Track current request status
+
+* View history of past donations
+
+* View charts:
+
+* Monthly donation trend
+
+* Blood group frequency
+
+* Recent donations table
+
+ **For Hospitals*
+
+* View all donation requests
+
+* Approve, Reject, or Complete
+
+* Auto-update blood stock on completion
+
+* View available donors
+
+* WhatsApp / Call donors in emergency
+
+* View blood stock of only their hospital
+
+ **Donation Stats Features**
+
+* Total donations
+
+* Blood type frequency (Pie Chart)
+
+* Monthly donations bar graph
+
+* Recent donation logs
+
+## Project Structure
+```
+bloodlink/
+│
+├── backend/
+│   ├── src/main/java/com/bloodlink/backend/
+│   ├── resources/application.properties
+│   └── pom.xml
+│
+├── frontend/
+│   ├── src/components/
+│   ├── src/pages/
+│   ├── src/context/AuthContext.jsx
+│   └── package.json
+│
+└── README.md
+```
+
+
+## Key Insights
+
+* Each hospital gets its own blood stock.
+
+* Donor statistics exclude rejected donations.
+
+* Only users with correct role can access the correct dashboard.
+
+* Secure password storage using BCrypt.
+
+
+## How to Run the Project   
+
+**Backend**
+```bash 
+    cd backend
+    mvn clean install
+    mvn spring-boot:run
+```
+**Update DB config in application.properties.**
+```bash
+    spring.datasource.url=jdbc:mysql://localhost:3306/bloodlink
+    spring.datasource.username=root
+    spring.datasource.password=yourpassword
+    spring.jpa.hibernate.ddl-auto=update
+```
+**Frontend**
+```bash
+    cd frontend
+    npm install
+    npm run dev
+```
+
+
+
+
+ 
 
