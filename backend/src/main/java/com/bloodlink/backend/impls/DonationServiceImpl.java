@@ -1,0 +1,248 @@
+package com.bloodlink.backend.impls;
+
+//
+//import com.bloodlink.backend.model.Donation;
+//
+//
+//import com.bloodlink.backend.dtos.DonationBookingRequest;
+//
+//import com.bloodlink.backend.dtos.DonationResponse;
+//import com.bloodlink.backend.model.*;
+//import com.bloodlink.backend.repositories.BloodStockRepo;
+//import com.bloodlink.backend.repositories.DonationRepo;
+//import com.bloodlink.backend.repositories.DonorRepo;
+//import com.bloodlink.backend.repositories.HospitalRepo;
+//import com.bloodlink.backend.service.DonationService;
+//import org.springframework.stereotype.Service;
+//
+//
+//import java.time.LocalDate;
+//import java.time.LocalTime;
+//import java.util.List;
+//import java.util.stream.Collectors;
+//
+//    @Service
+//    public class DonationServiceImpl implements DonationService {
+//
+//        private final DonationRepo donationRepo;
+//        private final DonorRepo donorRepo;
+//        private final HospitalRepo hospitalRepo;
+//        private final BloodStockRepo stockRepo;
+//
+//        public DonationServiceImpl(DonationRepo donationRepo, DonorRepo donorRepo,
+//                                   HospitalRepo hospitalRepo, BloodStockRepo stockRepo) {
+//            this.donationRepo = donationRepo;
+//            this.donorRepo = donorRepo;
+//            this.hospitalRepo = hospitalRepo;
+//            this.stockRepo = stockRepo;
+//        }
+//        @Override
+//        public List<Donation> getDonationByDonor(Long donorId) {
+//            return donationRepo.findByDonorDonorId(donorId);
+//        }
+//
+//        @Override
+//        public Donation createDonation(Long donorId, Long hospitalId, Donation donation) {
+//            return null;
+//        }
+//
+//        @Override
+//        public DonationResponse bookDonation(DonationBookingRequest req) {
+//
+//            Donor donor = donorRepo.findById(req.getDonorId())
+//                    .orElseThrow(() -> new RuntimeException("Donor not found"));
+//
+//            Hospital hospital = hospitalRepo.findById(req.getHospitalId())
+//                    .orElseThrow(() -> new RuntimeException("Hospital not found"));
+//
+//            Donation donation = new Donation();
+//            donation.setDonor(donor);
+//            donation.setHospital(hospital);
+//            donation.setDonationDate(req.getDonationDate());
+//            donation.setDonationTime(req.getDonationTime());
+//            donation.setBloodGroup(donor.getBloodGroup());
+//            donation.setBloodQuantity(1.0);
+//            donation.setStatus(RequestStatus.PENDING);
+//
+//            Donation saved = donationRepo.save(donation);
+//
+//            return mapToResponse(saved);
+//        }
+//
+//        @Override
+//        public void updateDonationStatus(Long donationId, String status) {
+//
+//        }
+//
+//
+//        @Override
+//        public List<DonationResponse> getDonationsByHospital(Long hospitalId) {
+//            return donationRepo.findByHospitalHospitalId(hospitalId)
+//                    .stream()
+//                    .map(this::mapToResponse)
+//                    .collect(Collectors.toList());
+//        }
+//
+//        @Override
+//        public Donation bookDonation(DonationRequest req) {
+//            return null;
+//        }
+//
+//        @Override
+//        public void updateDonationStatus(Long donationId, RequestStatus status) {
+//            Donation donation = donationRepo.findById(donationId)
+//                    .orElseThrow(() -> new RuntimeException("Donation not found"));
+//
+//            donation.setStatus(status);
+//            donationRepo.save(donation);
+//
+//            // If completed -> update blood stock
+//            if (status == RequestStatus.COMPLETED) {
+//                BloodStock stock = stockRepo.findByHospitalAndBloodGroup(
+//                        donation.getHospital(),
+//                        donation.getBloodGroup()
+//                );
+//
+//                if (stock == null) {
+//                    stock = new BloodStock();
+//                    stock.setHospital(donation.getHospital());
+//                    stock.setBloodGroup(donation.getBloodGroup());
+//                    stock.setUnitsAvailable(donation.getBloodQuantity());
+//                } else {
+//                    stock.setUnitsAvailable(stock.getUnitsAvailable() + donation.getBloodQuantity());
+//                }
+//
+//                stockRepo.save(stock);
+//            }
+//        }
+//
+//
+//        private DonationResponse mapToResponse(Donation d) {
+//            return new DonationResponse(
+//                    d.getDonationId(),
+//                    d.getDonor().getFullName(),
+//                    d.getBloodGroup(),
+//                    d.getBloodQuantity(),
+//                    d.getDonationDate(),
+//                    d.getDonationTime(),
+//                    d.getStatus()
+//
+//            );
+//        }
+//    }
+
+import com.bloodlink.backend.dtos.DonationBookingRequest;
+import com.bloodlink.backend.dtos.DonationResponse;
+import com.bloodlink.backend.model.*;
+import com.bloodlink.backend.repositories.BloodStockRepo;
+import com.bloodlink.backend.repositories.DonationRepo;
+import com.bloodlink.backend.repositories.DonorRepo;
+import com.bloodlink.backend.repositories.HospitalRepo;
+import com.bloodlink.backend.service.DonationService;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class DonationServiceImpl implements DonationService {
+
+    private final DonationRepo donationRepo;
+    private final DonorRepo donorRepo;
+    private final HospitalRepo hospitalRepo;
+    private final BloodStockRepo stockRepo;
+
+    public DonationServiceImpl(DonationRepo donationRepo, DonorRepo donorRepo, HospitalRepo hospitalRepo, BloodStockRepo stockRepo) {
+        this.donationRepo = donationRepo;
+        this.donorRepo = donorRepo;
+        this.hospitalRepo = hospitalRepo;
+
+        this.stockRepo = stockRepo;
+    }
+
+    @Override
+    public List<Donation> getDonationByDonor(Long donorId) {
+        return donationRepo.findByDonorDonorId(donorId);
+    }
+
+    @Override
+    public Donation createDonation(Long donorId, Long hospitalId, Donation donation) {
+    Donor donor = donorRepo.findById(donorId).orElseThrow(()-> new RuntimeException("donor not found"));
+
+        Hospital hospital = hospitalRepo.findById(hospitalId).orElseThrow(()-> new RuntimeException("hospital not found"));
+        donation.setDonor(donor);
+        donation.setHospital(hospital);
+        donation.setStatus(RequestStatus.COMPLETED);
+
+        return donationRepo.save(donation);
+
+    }
+
+    @Override
+    public void updateDonationStatus(Long donationId, RequestStatus status) {
+
+    }
+
+    public  void updateDonationStatus(Long donationId,String status) {
+        Donation donation = donationRepo.findById(donationId).orElseThrow(()-> new RuntimeException("donation not found"));
+
+        donation.setStatus(RequestStatus.valueOf(status));
+        donationRepo.save(donation);
+
+        if(status.equalsIgnoreCase("COMPLETED")) {
+            Hospital hospital = donation.getHospital();
+            String bloodGroup =donation.getBloodGroup();
+            Double units = donation.getBloodQuantity();
+
+            BloodStock stock = stockRepo.findByHospitalAndBloodGroup(hospital, bloodGroup);
+
+            if(stock != null) {
+                stock.setHospital(hospital);
+                stock.setBloodGroup(bloodGroup);
+                stock.setUnitsAvailable(units);
+
+            }
+            stockRepo.save(stock);
+        }
+
+    }
+
+    public List<DonationResponse> getDonationsByHospital(Long hospitalId) {
+        return donationRepo.findByHospitalHospitalId(hospitalId).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public DonationResponse bookDonation(DonationBookingRequest req) {
+        return null;
+    }
+
+    @Override
+    public Donation bookDonation(DonationRequest req) {
+        return  null;
+    }
+
+    private DonationResponse mapToResponse(Donation donation){
+        DonationResponse response = new DonationResponse();
+        response.setDonationId(donation.getDonationId());
+        response.setBloodGroup(donation.getBloodGroup());
+        response.setBloodQuantity(donation.getBloodQuantity());
+        response.setDonationDate(donation.getDonationDate());
+
+        response.setStatus(donation.getStatus());
+        return response;
+    }
+
+    private Donation mapToEntity(DonationResponse response){
+        Donation donation = new Donation();
+
+        donation.setDonationId(response.getDonationId());
+        donation.setBloodGroup(response.getBloodGroup());
+        donation.setBloodQuantity(response.getBloodQuantity());
+        donation.setDonationDate(response.getDonationDate());
+        donation.setDonationTime(response.getDonationTime());
+        donation.setStatus(response.getStatus());
+        return donation;
+    }
+}
