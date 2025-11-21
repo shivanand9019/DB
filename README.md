@@ -67,20 +67,26 @@ Each hospital maintains its own blood stock — not shared globally.
 > Login → View Donation Requests → Approve/Reject/Complete → Update Blood Stock → View Donors
 
 **Backend API Endpoints**
-* User Authentication
-  POST /api/users/register
-  POST /api/users/login
-  
-* Donation Management
-  POST /api/donations/book
-  GET  /api/donations/byHospital/{hospitalId}
-  PUT  /api/donations/{donationId}/status
 
-* Donation Stats (Donor)
-    GET /api/donations/stats/donor/{donorId}
+**User Authentication*
+```bash
+POST /api/users/register
+POST /api/users/login
+  ```
+**Donation Management*
+```bash
+POST /api/donations/book
+GET  /api/donations/byHospital/{hospitalId}
+PUT  /api/donations/{donationId}/status
+```
+**Donation Stats (Donor)*
+```bash
+GET /api/donations/stats/donor/{donorId}
+```
   
-* Blood Stock
-    GET /api/bloodstock/{hospitalId}
+**Blood Stock*
+```bash 
+GET /api/bloodstock/{hospitalId}
 
 **Key Features Implemented**
 
@@ -156,24 +162,24 @@ bloodlink/
 
 ## How to Run the Project   
 
-**Backend**
-```bash 
-    cd backend
-    mvn clean install
-    mvn spring-boot:run
+**Backend*
+``bash 
+cd backend
+mvn clean install
+mvn spring-boot:run
 ```
 **Update DB config in application.properties.**
 ```bash
-    spring.datasource.url=jdbc:mysql://localhost:3306/bloodlink
-    spring.datasource.username=root
-    spring.datasource.password=yourpassword
-    spring.jpa.hibernate.ddl-auto=update
+spring.datasource.url=jdbc:mysql://localhost:3306/bloodlink
+spring.datasource.username=root
+spring.datasource.password=yourpassword
+spring.jpa.hibernate.ddl-auto=update
 ```
 **Frontend**
 ```bash
-    cd frontend
-    npm install
-    npm run dev
+cd frontend
+npm install
+npm run dev
 ```
 
 
