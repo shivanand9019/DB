@@ -87,7 +87,7 @@ GET /api/donations/stats/donor/{donorId}
 **Blood Stock*
 ```bash 
 GET /api/bloodstock/{hospitalId}
-
+```
 **Key Features Implemented**
 
 **For Donors*
@@ -162,8 +162,8 @@ bloodlink/
 
 ## How to Run the Project   
 
-**Backend*
-``bash 
+**Backend**
+```bash 
 cd backend
 mvn clean install
 mvn spring-boot:run
