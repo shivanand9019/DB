@@ -42,7 +42,7 @@ export default function DonationHistory() {
         }
 
         axios
-            .get(`http://localhost:8080/api/donations/donor/${donorId}`)
+            .get(`http://localhost:8080/api/donations/donors/${donorId}`)
             .then((res) => {
                 setDonations(res.data || []);
                 setError("");
@@ -99,9 +99,10 @@ export default function DonationHistory() {
         const payload = {
             donorId: Number(donorId),
             hospitalId: Number(selectedHospital),
-            donationDate: formData.date,
-            donationTime: formData.time,
+            donationDate: formData.date + "T00:00:00",   // <-- FIX
+            donationTime: formData.time + ":00"          // <-- FIX
         };
+
 
         try {
             await axios.post("http://localhost:8080/api/donations/book", payload);
@@ -113,7 +114,7 @@ export default function DonationHistory() {
 
             // Refresh history
             const res = await axios.get(
-                `http://localhost:8080/api/donations/donor/${donorId}`
+                `http://localhost:8080/api/donations/donors/${donorId}`
             );
             setDonations(res.data || []);
         } catch (err) {
@@ -259,18 +260,18 @@ export default function DonationHistory() {
                             <tbody>
                             {donations.map((d, i) => (
                                 <tr key={d.id || i} className="border-b hover:bg-gray-50">
-                                    <td className="py-2 px-3 text-center">{i + 1}</td>
-                                    <td className="py-2 px-3 text-center">
+                                    <td className="py-2 text-black px-3 text-center">{i + 1}</td>
+                                    <td className="py-2 text-black px-3 text-center">
                                         {getDateString(d.donationDate) || "—"}
                                     </td>
-                                    <td className="py-2 px-3 text-center">
+                                    <td className="py-2 text-black px-3 text-center">
                                         {d.hospital?.hospitalName || "—"}
                                     </td>
-                                    <td className="py-2 px-3 text-center">
+                                    <td className="py-2 text-black px-3 text-center">
                                         {d.bloodGroup || "—"}
                                     </td>
                                     <td
-                                        className={`py-2 px-3 text-center ${
+                                        className={`py-2 px-3 text-black text-center ${
                                             d.status?.toLowerCase() === "completed"
                                                 ? "text-green-600"
                                                 : "text-yellow-600"
@@ -285,7 +286,7 @@ export default function DonationHistory() {
                     </div>
 
                     {donations.length === 0 && (
-                        <p className="text-center text-gray-500 mt-4">
+                        <p className="text-center text-black text-gray-500 mt-4">
                             No donations found.
                         </p>
                     )}

@@ -30,6 +30,9 @@ public class Hospital {
     private String hospitalContactNumber;
     private LocalDate createdAt;
     private LocalDate updatedAt;
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] profilePic;
 
     @PrePersist
     public void onCreate() {

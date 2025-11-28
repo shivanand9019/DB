@@ -2,6 +2,7 @@ package com.bloodlink.backend.impls;
 
 import com.bloodlink.backend.dtos.HospitalRegistrationRequest;
 import com.bloodlink.backend.dtos.HospitalResponse;
+import com.bloodlink.backend.model.Donor;
 import com.bloodlink.backend.model.Hospital;
 import com.bloodlink.backend.model.User;
 import com.bloodlink.backend.repositories.HospitalRepo;
@@ -9,7 +10,9 @@ import com.bloodlink.backend.repositories.UserRepo;
 import com.bloodlink.backend.service.HospitalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -57,15 +60,12 @@ public class HospitalServiceImpl implements HospitalService {
                 .map(h -> new HospitalResponse(null,h.getHospitalId(),h.getHospitalName(),h.getHospitalAddress()
                 )).toList();
     }
-
-//    @Override
-//    public Hospital loginHospital(String email, String password) {
-//        Hospital hospital = hospitalService.loginHospital(hospitalRepo.getEmail(),request.getPassword());
-//        UserResponse userResponse = new UserResponse(
-//                "Login Successfull!",user.getRole().name(),user.getUserID()
-//        );
-//        return ResponseEntity.ok(userResponse);
-//    }
-//    }
+    @Override
+    public Hospital uploadProfilePic(Long hospitalId, MultipartFile file) throws IOException {
+        Hospital hospital = hospitalRepo.findByHospitalId(hospitalId)
+                .orElseThrow(() -> new RuntimeException("Hospital not found"));
+        hospital.setProfilePic(file.getBytes());
+        return hospitalRepo.save(hospital);
+    }
 
 }

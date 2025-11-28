@@ -50,9 +50,6 @@ public class DonorController {
         return ResponseEntity.ok(donor);
     }
     @GetMapping("/available")
-
-
-
     public ResponseEntity<List<DonorResponse>> getAvailableDonors(
             @RequestParam(required = false) String bloodGroup,@RequestParam(required = false) String city){
         List<DonorResponse> donors = donorService.getAvailableDonors(bloodGroup,city);
@@ -72,11 +69,11 @@ public class DonorController {
     }
 
 
-    @PutMapping("/{id}/toggle-availability")
-    public ResponseEntity<Donor> toggleAvailability(@PathVariable Long id) {
-        Donor donor = donorService.toggleAvailability(id);
-        return ResponseEntity.ok(donor);
-    }
+//    @PutMapping("/{id}/toggle-availability")
+//    public ResponseEntity<Donor> toggleAvailability(@PathVariable Long id) {
+//        Donor donor = donorService.toggleAvailability(id);
+//        return ResponseEntity.ok(donor);
+//    }
 
     // Upload photo
     @PostMapping("/upload-photo/{donorId}")

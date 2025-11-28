@@ -6,7 +6,6 @@ import com.bloodlink.backend.dtos.DonationBookingRequest;
 import com.bloodlink.backend.dtos.DonationResponse;
 import com.bloodlink.backend.dtos.DonorResponse;
 import com.bloodlink.backend.model.Donation;
-import com.bloodlink.backend.model.DonationRequest;
 
 import com.bloodlink.backend.model.RequestStatus;
 
@@ -25,8 +24,10 @@ public interface DonationService {
 
     DonationResponse bookDonation(DonationBookingRequest req);
 
-    void updateDonationStatus(Long donationId,String status);
+    //void updateDonationStatus(Long donationId,String status);
     List<DonationResponse> getDonationsByHospital(Long hospitalId);
 
-    Donation bookDonation(DonationRequest req);
+   // Donation bookDonation(DonationRequest req);
 }
+
+

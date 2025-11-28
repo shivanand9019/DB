@@ -2,6 +2,7 @@ package com.bloodlink.backend.controller;
 
 import com.bloodlink.backend.dtos.HospitalRegistrationRequest;
 import com.bloodlink.backend.dtos.HospitalResponse;
+import com.bloodlink.backend.model.Donor;
 import com.bloodlink.backend.model.Hospital;
 import com.bloodlink.backend.repositories.HospitalRepo;
 import com.bloodlink.backend.service.HospitalService;
@@ -9,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
@@ -50,13 +53,14 @@ public class HospitalController {
     ResponseEntity<List<HospitalResponse>> getAllHospitals() {
         return ResponseEntity.ok(hospitalService.getAllHospitals());
     }
-
+    @PostMapping("/upload-photo/{hospitalId}")
+    public ResponseEntity<Hospital> uploadPhoto(
+            @PathVariable Long hospitalId,
+            @RequestParam("file") MultipartFile file) throws IOException {
+        Hospital hospital = hospitalService.uploadProfilePic(hospitalId, file);
+        return ResponseEntity.ok(hospital);
+    }
 
 
 }
-//    @PostMapping("/login")
-//    public ResponseEntity<Hospital> loginHospital(@RequestParam String email, @RequestParam String password){
-//        Hospital hospital = hospitalService.loginHospital(email,password);
-//        return  ResponseEntity.ok(hospital);
-//
-//    }
+

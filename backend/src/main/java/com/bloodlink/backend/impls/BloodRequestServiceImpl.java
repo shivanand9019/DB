@@ -61,7 +61,7 @@ public class BloodRequestServiceImpl implements BloodRequestService {
     private BloodRequestDTO convertToDTO(BloodRequest req){
         BloodRequestDTO dto = new BloodRequestDTO();
         dto.setRequestId(req.getRequestId());
-        dto.setPatientName(req.getPatientName());
+        dto.setPatientName(req.getDonor().getFullName());
         dto.setBloodGroup(req.getBloodGroup());
         dto.setUnitsRequired(req.getUnitsRequired());
         dto.setContact(req.getContact());

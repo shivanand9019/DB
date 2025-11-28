@@ -1,136 +1,5 @@
 package com.bloodlink.backend.impls;
 
-//
-//import com.bloodlink.backend.model.Donation;
-//
-//
-//import com.bloodlink.backend.dtos.DonationBookingRequest;
-//
-//import com.bloodlink.backend.dtos.DonationResponse;
-//import com.bloodlink.backend.model.*;
-//import com.bloodlink.backend.repositories.BloodStockRepo;
-//import com.bloodlink.backend.repositories.DonationRepo;
-//import com.bloodlink.backend.repositories.DonorRepo;
-//import com.bloodlink.backend.repositories.HospitalRepo;
-//import com.bloodlink.backend.service.DonationService;
-//import org.springframework.stereotype.Service;
-//
-//
-//import java.time.LocalDate;
-//import java.time.LocalTime;
-//import java.util.List;
-//import java.util.stream.Collectors;
-//
-//    @Service
-//    public class DonationServiceImpl implements DonationService {
-//
-//        private final DonationRepo donationRepo;
-//        private final DonorRepo donorRepo;
-//        private final HospitalRepo hospitalRepo;
-//        private final BloodStockRepo stockRepo;
-//
-//        public DonationServiceImpl(DonationRepo donationRepo, DonorRepo donorRepo,
-//                                   HospitalRepo hospitalRepo, BloodStockRepo stockRepo) {
-//            this.donationRepo = donationRepo;
-//            this.donorRepo = donorRepo;
-//            this.hospitalRepo = hospitalRepo;
-//            this.stockRepo = stockRepo;
-//        }
-//        @Override
-//        public List<Donation> getDonationByDonor(Long donorId) {
-//            return donationRepo.findByDonorDonorId(donorId);
-//        }
-//
-//        @Override
-//        public Donation createDonation(Long donorId, Long hospitalId, Donation donation) {
-//            return null;
-//        }
-//
-//        @Override
-//        public DonationResponse bookDonation(DonationBookingRequest req) {
-//
-//            Donor donor = donorRepo.findById(req.getDonorId())
-//                    .orElseThrow(() -> new RuntimeException("Donor not found"));
-//
-//            Hospital hospital = hospitalRepo.findById(req.getHospitalId())
-//                    .orElseThrow(() -> new RuntimeException("Hospital not found"));
-//
-//            Donation donation = new Donation();
-//            donation.setDonor(donor);
-//            donation.setHospital(hospital);
-//            donation.setDonationDate(req.getDonationDate());
-//            donation.setDonationTime(req.getDonationTime());
-//            donation.setBloodGroup(donor.getBloodGroup());
-//            donation.setBloodQuantity(1.0);
-//            donation.setStatus(RequestStatus.PENDING);
-//
-//            Donation saved = donationRepo.save(donation);
-//
-//            return mapToResponse(saved);
-//        }
-//
-//        @Override
-//        public void updateDonationStatus(Long donationId, String status) {
-//
-//        }
-//
-//
-//        @Override
-//        public List<DonationResponse> getDonationsByHospital(Long hospitalId) {
-//            return donationRepo.findByHospitalHospitalId(hospitalId)
-//                    .stream()
-//                    .map(this::mapToResponse)
-//                    .collect(Collectors.toList());
-//        }
-//
-//        @Override
-//        public Donation bookDonation(DonationRequest req) {
-//            return null;
-//        }
-//
-//        @Override
-//        public void updateDonationStatus(Long donationId, RequestStatus status) {
-//            Donation donation = donationRepo.findById(donationId)
-//                    .orElseThrow(() -> new RuntimeException("Donation not found"));
-//
-//            donation.setStatus(status);
-//            donationRepo.save(donation);
-//
-//            // If completed -> update blood stock
-//            if (status == RequestStatus.COMPLETED) {
-//                BloodStock stock = stockRepo.findByHospitalAndBloodGroup(
-//                        donation.getHospital(),
-//                        donation.getBloodGroup()
-//                );
-//
-//                if (stock == null) {
-//                    stock = new BloodStock();
-//                    stock.setHospital(donation.getHospital());
-//                    stock.setBloodGroup(donation.getBloodGroup());
-//                    stock.setUnitsAvailable(donation.getBloodQuantity());
-//                } else {
-//                    stock.setUnitsAvailable(stock.getUnitsAvailable() + donation.getBloodQuantity());
-//                }
-//
-//                stockRepo.save(stock);
-//            }
-//        }
-//
-//
-//        private DonationResponse mapToResponse(Donation d) {
-//            return new DonationResponse(
-//                    d.getDonationId(),
-//                    d.getDonor().getFullName(),
-//                    d.getBloodGroup(),
-//                    d.getBloodQuantity(),
-//                    d.getDonationDate(),
-//                    d.getDonationTime(),
-//                    d.getStatus()
-//
-//            );
-//        }
-//    }
-
 import com.bloodlink.backend.dtos.DonationBookingRequest;
 import com.bloodlink.backend.dtos.DonationResponse;
 import com.bloodlink.backend.model.*;
@@ -141,6 +10,8 @@ import com.bloodlink.backend.repositories.HospitalRepo;
 import com.bloodlink.backend.service.DonationService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -180,32 +51,57 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public void updateDonationStatus(Long donationId, RequestStatus status) {
+        Donation donation = donationRepo.findById(donationId)
+                .orElseThrow(() -> new RuntimeException("Donation not found"));
 
-    }
-
-    public  void updateDonationStatus(Long donationId,String status) {
-        Donation donation = donationRepo.findById(donationId).orElseThrow(()-> new RuntimeException("donation not found"));
-
-        donation.setStatus(RequestStatus.valueOf(status));
+        donation.setStatus(status);
         donationRepo.save(donation);
 
-        if(status.equalsIgnoreCase("COMPLETED")) {
+        // If completed update blood stock
+        if (status == RequestStatus.COMPLETED) {
             Hospital hospital = donation.getHospital();
-            String bloodGroup =donation.getBloodGroup();
+            String bloodGroup = donation.getBloodGroup();
             Double units = donation.getBloodQuantity();
 
             BloodStock stock = stockRepo.findByHospitalAndBloodGroup(hospital, bloodGroup);
 
-            if(stock != null) {
+            if (stock == null) {
+                stock = new BloodStock();
                 stock.setHospital(hospital);
                 stock.setBloodGroup(bloodGroup);
                 stock.setUnitsAvailable(units);
-
+            } else {
+                stock.setUnitsAvailable(stock.getUnitsAvailable() + units);
             }
+
             stockRepo.save(stock);
         }
-
     }
+
+//    @Service
+//    public class DonationService {
+//
+//        @Autowired
+//        DonationJdbcRepo repo;
+//
+//        public void bookDonation(DonationBookingRequest req) {
+//            repo.createDonation(
+//                    req.getDonorId(),
+//                    req.getHospitalId(),
+//                    req.getDonationDate(),
+//                    req.getDonationTime()
+//            );
+//        }
+//
+//        public List<Map<String,Object>> getHospitalDonations(Long hospitalId) {
+//            return repo.getByHospital(hospitalId);
+//        }
+//
+//        public void updateStatus(Long donationId, String status) {
+//            repo.updateStatus(donationId, status);
+//        }
+//    }
+//
 
     public List<DonationResponse> getDonationsByHospital(Long hospitalId) {
         return donationRepo.findByHospitalHospitalId(hospitalId).stream()
@@ -215,22 +111,39 @@ public class DonationServiceImpl implements DonationService {
 
     @Override
     public DonationResponse bookDonation(DonationBookingRequest req) {
-        return null;
+
+        Donor donor = donorRepo.findById(req.getDonorId())
+                .orElseThrow(() -> new RuntimeException("Donor not found"));
+
+        Hospital hospital = hospitalRepo.findById(req.getHospitalId())
+                .orElseThrow(() -> new RuntimeException("Hospital not found"));
+
+        Donation donation = new Donation();
+        donation.setDonor(donor);
+        donation.setHospital(hospital);
+        donation.setDonationDate(req.getDonationDate());
+        donation.setDonationTime(req.getDonationTime());
+        donation.setBloodGroup(donor.getBloodGroup());
+        donation.setBloodQuantity(1.0);
+        donation.setStatus(RequestStatus.PENDING);
+
+        Donation saved = donationRepo.save(donation);
+
+        return mapToResponse(saved);
     }
 
-    @Override
-    public Donation bookDonation(DonationRequest req) {
-        return  null;
-    }
 
     private DonationResponse mapToResponse(Donation donation){
         DonationResponse response = new DonationResponse();
-        response.setDonationId(donation.getDonationId());
-        response.setBloodGroup(donation.getBloodGroup());
-        response.setBloodQuantity(donation.getBloodQuantity());
-        response.setDonationDate(donation.getDonationDate());
+        response.setDonorName(donation.getDonor().getFullName());
 
+        response.setDonationId(donation.getDonationId());
+        response.setBloodQuantity(donation.getBloodQuantity());
+        response.setBloodGroup(donation.getBloodGroup());
+        response.setDonationDate(donation.getDonationDate());
+        response.setDonationTime(donation.getDonationTime());
         response.setStatus(donation.getStatus());
+
         return response;
     }
 

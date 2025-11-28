@@ -26,6 +26,8 @@ export default function BloodRequests() {
                 `http://localhost:8080/api/donations/byHospital/${hospitalId}`
             );
             setDonations(res.data || []);
+            console.log("Updated donations:", res.data);  // <--- ADD THIS
+            setDonations(res.data || []);
         } catch (err) {
             console.error("Error fetching donations:", err);
         } finally {
@@ -99,7 +101,7 @@ export default function BloodRequests() {
         <div className="w-full bg-white p-6 rounded-xl shadow-md">
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-red-600">🩸 Donation Requests</h2>
+                <h2 className="text-xl font-bold text-red-600"> Donation Requests</h2>
 
                 <button
                     onClick={downloadPDF}
@@ -110,7 +112,7 @@ export default function BloodRequests() {
             </div>
 
             {/* Filter */}
-            <div className="mb-4 flex gap-3 items-center">
+            <div className="mb-4 flex gap-3 text-black items-center">
                 <input
                     type="text"
                     placeholder="Filter by status..."

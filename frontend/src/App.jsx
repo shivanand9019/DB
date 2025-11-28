@@ -16,7 +16,7 @@ import DonorDashBoard from './pages/DonorDashBoard.jsx';
 import HospitalDashBoard from './pages/HospitalDashBoard.jsx';
 
 
-// ✅ Private Route Component
+//  Private Route Component
 const PrivateRoute = ({ allowedRoles }) => {
     const { user } = useAuth();
 

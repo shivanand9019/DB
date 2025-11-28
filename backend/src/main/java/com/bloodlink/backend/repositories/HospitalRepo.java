@@ -14,5 +14,5 @@ public interface HospitalRepo extends JpaRepository<Hospital,Long>{
     Optional<Hospital> findByUserUserID(Long userId);
     Optional<Hospital> findByEmail(String email);
 
-
+    Optional<Hospital> findByHospitalId(Long hospitalId);
 }
